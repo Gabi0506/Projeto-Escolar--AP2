@@ -42,8 +42,7 @@ class Professor(Base):
 
     rp = Column(Integer, primary_key=True)  
     nome = Column(String)
-    turmas = relationship('Turma', secondary='professor_turma')  # Relacionamens
-
+    turmas = relationship('Turma', secondary='professor_turma') 
     def __repr__(self):
         return f'Professor(nome={self.nome}, rp={self.rp})'
 
@@ -61,84 +60,82 @@ def adicionar_aluno(nome, idade):
         novo_aluno = Aluno(ra=novo_ra, nome=nome, idade=idade)  
         session.add(novo_aluno)  
         session.commit()
-        print(f'Aluno {nome} (RA: {novo_ra}, idade: {idade}) adicionado com sucesso!')  # Exibe mensagem de sucesso
+        print(f'Aluno {nome} (RA: {novo_ra}, idade: {idade}) adicionado com sucesso!') 
     else:
-        print("Aluno com RA já existe!")  # Exibe mensagem de erro se o RA já existir
+        print("Aluno com RA já existe!") 
 
-# Função para listar todos os alunos cadastrados
-def consultar_alunos(): #função para listar alunos
-    alunos = session.query(Aluno).all() #consulta todos os alunos
-    for aluno in alunos: #percorre as turmas
-        print(f'RA: {aluno.ra}, | Nome: {aluno.nome}, | Idade: {aluno.idade}') #imprime os alunos
+def consultar_alunos(): 
+    alunos = session.query(Aluno).all() 
+    for aluno in alunos: #
+        print(f'RA: {aluno.ra}, | Nome: {aluno.nome}, | Idade: {aluno.idade}') 
 
-# Função para adicionar uma turma ao banco de dados
-def adicionar_turma(ano, classe):  #função para adicionar turma
-    ultimo_rt = session.query(Turma).order_by(Turma.rt.desc()).first()  # Obtém o último RT cadastrado
-    novo_rt = str(int(ultimo_rt.rt) + 1) if ultimo_rt else "1"  # Incrementa o RT automaticamente
-    if not session.query(Turma).filter_by(rt=novo_rt).first():  # Verifica se o RT já existe
-        nova_turma = Turma(rt=novo_rt, ano=ano, classe=classe)  # Cria um novo objeto Turma
-        session.add(nova_turma) # Adiciona a turma à sessão
-        session.commit() # Salva as alterações no banco de dados
-        print(f'Turma {nova_turma} (ano: {ano}, classe: {classe}) adicionada com sucesso!')  # Exibe mensagem de sucesso
+
+def adicionar_turma(ano, classe): 
+    ultimo_rt = session.query(Turma).order_by(Turma.rt.desc()).first() 
+    novo_rt = str(int(ultimo_rt.rt) + 1) if ultimo_rt else "1"  
+    if not session.query(Turma).filter_by(rt=novo_rt).first():  
+        nova_turma = Turma(rt=novo_rt, ano=ano, classe=classe)  
+        session.add(nova_turma) 
+        session.commit() 
+        print(f'Turma {nova_turma} (ano: {ano}, classe: {classe}) adicionada com sucesso!') 
     else:
-        print("Classe com RT já existente")  # Exibe mensagem de erro se o RT já existir
+        print("Classe com RT já existente")  
 
-# Função para listar todas as turmas cadastradas
-def consultar_turmas():  #função para listar turmas
-    turmas = session.query(Turma).all()  #consulta todas as turmas
-    for turma in turmas:  #percorre as turmas
-        print(f'RT: {turma.rt}, Ano: {turma.ano}, Classe: {turma.classe}')  #imprime as turmas
 
-# Função para associar um aluno a uma turma
-def adicionar_aluno_a_turma(aluno_ra, turma_rt):  #função para adicionar aluno a turma
-    aluno = session.query(Aluno).filter_by(ra=aluno_ra).first()  #consulta o aluno
-    turma = session.query(Turma).filter_by(rt=turma_rt).first()  #consulta a turma
-    if aluno and turma:  #verifica se o aluno e a turma existem
-        if aluno in turma.alunos:  #verifica se o aluno já está na turma
-            print(f'O aluno {aluno.nome} (RA: {aluno.ra}) já está na turma {turma.rt}.')  #imprime mensagem de erro
+def consultar_turmas():  
+    turmas = session.query(Turma).all()  
+    for turma in turmas:  
+        print(f'RT: {turma.rt}, Ano: {turma.ano}, Classe: {turma.classe}')  
+
+
+def adicionar_aluno_a_turma(aluno_ra, turma_rt): 
+    aluno = session.query(Aluno).filter_by(ra=aluno_ra).first() 
+    turma = session.query(Turma).filter_by(rt=turma_rt).first()  
+    if aluno and turma:  
+        if aluno in turma.alunos:  
+            print(f'O aluno {aluno.nome} (RA: {aluno.ra}) já está na turma {turma.rt}.')  
         else:
-            turma.alunos.append(aluno)  #adiciona o aluno à turma
-            session.commit() # Salva as alterações no banco de dados
-            print(f'Aluno {aluno.nome} (RA: {aluno.ra}) adicionado à turma {turma.rt}.')  #imprime mensagem de sucesso
+            turma.alunos.append(aluno)  
+            session.commit() 
+            print(f'Aluno {aluno.nome} (RA: {aluno.ra}) adicionado à turma {turma.rt}.') 
     elif not aluno:
-        print("Aluno não encontrado.")  #imprime mensagem de erro
+        print("Aluno não encontrado.")  
     elif not turma:
-        print("Turma não encontrada.")  #imprime mensagem de erro
+        print("Turma não encontrada.")  
     else:
-        print("Aluno ou Turma não encontrado(s).")  #imprime mensagem de erro
+        print("Aluno ou Turma não encontrado(s).")  
 
-# Função para listar os alunos de uma turma específica
-def consultar_alunos_por_turma(turma_rt):  #função para listar alunos de uma turma
-    turma = session.query(Turma).filter_by(rt=turma_rt).first()  #consulta a turma
-    if turma:  #verifica se a turma existe
-        print(f'Alunos na turma {turma.rt} ({turma.ano} {turma.classe}):')  #imprime a turma
+def consultar_alunos_por_turma(turma_rt): 
+    turma = session.query(Turma).filter_by(rt=turma_rt).first()  
+    if turma: 
+        print(f'Alunos na turma {turma.rt} ({turma.ano} {turma.classe}):')
         for aluno in turma.alunos:  
-            print(f' - {aluno.nome} | (RA: {aluno.ra})')  #imprime os alunos
+            print(f' - {aluno.nome} | (RA: {aluno.ra})') 
     else:
         print("Turma não encontrada.")
 
-# Função para adicionar um professor ao banco de dados
-def adicionar_professor(nome):  #função para adicionar professor
-    ultimo_rp = session.query(Professor).order_by(Professor.rp.desc()).first()  # Obtém o último RP cadastrado
-    novo_rp = int(ultimo_rp.rp) + 1 if ultimo_rp else 1  # Incrementa o RP automaticamente
-    if not session.query(Professor).filter_by(rp=novo_rp).first():  # Verifica se o RP já existe
-        novo_professor = Professor(rp=novo_rp, nome=nome)  # Cria um novo objeto Professor
-        session.add(novo_professor)  # Adiciona o professor à sessão
-        session.commit() # Salva as alterações no banco de dados
-        print(f'Professor {nome} (RP: {novo_rp}) adicionado com sucesso!')  # Exibe mensagem de sucesso
-    else:
-        print("Professor já existe no sistema.")  # Exibe mensagem de erro se o RP já existir
 
-# Função para listar todos os professores cadastrados
-def consultar_professores():  #função para listar professores
+def adicionar_professor(nome):  
+    ultimo_rp = session.query(Professor).order_by(Professor.rp.desc()).first() 
+    novo_rp = int(ultimo_rp.rp) + 1 if ultimo_rp else 1 
+    if not session.query(Professor).filter_by(rp=novo_rp).first(): 
+        novo_professor = Professor(rp=novo_rp, nome=nome)  
+        session.add(novo_professor) 
+        session.commit() 
+        print(f'Professor {nome} (RP: {novo_rp}) adicionado com sucesso!')  
+    else:
+        print("Professor já existe no sistema.")  
+
+
+def consultar_professores(): 
     professores = session.query(Professor).all() 
-    if professores:  #verifica se há professores cadastrados
-        for professor in professores:  #percorre os professores 
-            print(f'Nome: {professor.nome}, RP: {professor.rp}')  #imprime os professores
+    if professores:  
+        for professor in professores:  
+            print(f'Nome: {professor.nome}, RP: {professor.rp}')  
     else:
-        print("Ainda não há professores registrados no sistema.")  #imprime mensagem de erro
+        print("Ainda não há professores registrados no sistema.")  
 
-# Função para associar um professor a uma turma
+
 def adicionar_professor_a_turma(professor_rp, turma_rt):
     professor = session.query(Professor).filter_by(rp=professor_rp).first()
     turma = session.query(Turma).filter_by(rt=turma_rt).first()
@@ -148,13 +145,12 @@ def adicionar_professor_a_turma(professor_rp, turma_rt):
             print(f'O professor {professor.nome} (RP: {professor.rp}) já está na turma {turma.rt}.')
         else:
             turma.professores.append(professor)
-            session.commit()  # Salva as alterações no banco de dados
+            session.commit() 
             print(f'Professor {professor.nome} (RP: {professor.rp}) adicionado à turma {turma.rt}.') 
         print("Professor ou Turma não encontrado(s).")
 
 
-# Função para listar os professores de uma turma específica
-def consultar_professor_por_turma(turma_rt):  #função para listar professores de uma turma
+def consultar_professor_por_turma(turma_rt): 
     turma = session.query(Turma).filter_by(rt=turma_rt).first() 
     if turma: 
         print(f'Professores da turma {turma.rt} ({turma.ano} {turma.classe}):') 
@@ -163,16 +159,16 @@ def consultar_professor_por_turma(turma_rt):  #função para listar professores 
     else:
         print("Turma não encontrada.")
 
-# Função para remover um aluno de todas as turmas e do sistema
-def remover_aluno_de_turmas():  #função para remover aluno de turmas
-    consultar_alunos()  # Lista todos os alunos
+
+def remover_aluno_de_turmas(): 
+    consultar_alunos()  
     aluno_ra = input('Digite o RA do Aluno que deseja expulsar: ') 
     aluno = session.query(Aluno).filter_by(ra=aluno_ra).first() 
     if aluno:
         for turma in aluno.turmas: 
             turma.alunos.remove(aluno) 
         session.delete(aluno) 
-        session.commit() # Salva as alterações no banco de dados
+        session.commit() 
         print(f'Aluno {aluno.nome} | (RA: {aluno.ra}) foi removido de todas as turmas e excluído do sistema.')
     else:
         print("Aluno não encontrado.")
@@ -261,4 +257,4 @@ def main():
             print("Opção inválida. Tente novamente.")
 
 if __name__ == "__main__":
-    main()  # Executa a função principal ao iniciar o programa
+    main()  
