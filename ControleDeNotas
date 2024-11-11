@@ -1,43 +1,35 @@
-# Importa classes e funções da biblioteca SQLAlchemy, que é uma ferramenta para trabalhar com bancos de dados em Python
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, create_engine  # Importa tipos de dados, chave estrangeira e engine de conexão
-from sqlalchemy.orm import relationship, sessionmaker  # relationship para relacionamentos e sessionmaker para sessões de banco de dados
-from sqlalchemy.ext.declarative import declarative_base  # Base para definir modelos de tabelas
-from sqlalchemy.exc import IntegrityError  # Exceção para erros de integridade (por exemplo, duplicidade)
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, create_engine
+from sqlalchemy.orm import relationship, sessionmaker  
+from sqlalchemy.ext.declarative import declarative_base  
+from sqlalchemy.exc import IntegrityError  
 
-# Define uma classe base para as tabelas do banco de dados
 Base = declarative_base()
 
-# Cria um objeto de conexão com o banco de dados SQLite em memória; substitua para um banco persistente em produção
 engine = create_engine('sqlite:///:memory:')  
 
-# Cria uma fábrica de sessões vinculada ao engine, permitindo a interação com o banco de dados
 Session = sessionmaker(bind=engine)
 
-# Instancia uma sessão do banco de dados
 session = Session()
 
-# Classe que define a tabela Aluno
 class Aluno(Base):
-    __tablename__ = 'alunos'  # Nome da tabela no banco de dados
-    ra = Column(String, primary_key=True)  # RA do aluno como chave primária
-    nome = Column(String)  # Nome do aluno
-    notas = relationship("Nota", back_populates="aluno")  # Relacionamento com a tabela Nota
+    __tablename__ = 'alunos'  
+    ra = Column(String, primary_key=True) 
+    nome = Column(String)  
+    notas = relationship("Nota", back_populates="aluno")  
 
-# Classe que define a tabela Disciplina
 class Disciplina(Base):
-    __tablename__ = "disciplinas"  # Nome da tabela no banco de dados
-    id = Column(Integer, primary_key=True)  # ID da disciplina como chave primária
-    nome = Column(String, unique=True)  # Nome da disciplina, que deve ser único
-    notas = relationship("Nota", back_populates="disciplina")  # Relacionamento com a tabela Nota
+    __tablename__ = "disciplinas"  
+    id = Column(Integer, primary_key=True)  
+    nome = Column(String, unique=True)  
+    notas = relationship("Nota", back_populates="disciplina") 
 
-# Classe que define a tabela Nota
 class Nota(Base):
-    __tablename__ = "notas"  # Nome da tabela no banco de dados
-    id = Column(Integer, primary_key=True)  # ID da nota como chave primária
-    aluno_id = Column(String, ForeignKey('alunos.ra'))  # Chave estrangeira para o RA do aluno
-    disciplina_id = Column(Integer, ForeignKey('disciplinas.id'))  # Chave estrangeira para o ID da disciplina
-    valor = Column(Float, nullable=False)  # Valor da nota, obrigatório (não permite nulo)
-    aluno = relationship("Aluno", back_populates="notas")  # Relacionamento com a tabela Aluno
+    __tablename__ = "notas" 
+    id = Column(Integer, primary_key=True)  
+    aluno_id = Column(String, ForeignKey('alunos.ra'))  
+    disciplina_id = Column(Integer, ForeignKey('disciplinas.id'))  
+    valor = Column(Float, nullable=False)  
+    aluno = relationship("Aluno", back_populates="notas")  
     disciplina = relationship("Disciplina", back_populates="notas")  # Relacionamento com a tabela Disciplina
 
 # Cria todas as tabelas definidas no banco de dados
