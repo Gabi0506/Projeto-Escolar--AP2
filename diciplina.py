@@ -1,65 +1,58 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 
-# Configuração do banco de dados e criação de uma sessão
 engine = create_engine('sqlite:///biblioteca.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Base para as classes de modelo
+
 Base = declarative_base()
 
-# Modelo para Aluno
 class Aluno(Base):
     __tablename__ = 'alunos'
 
-    ra = Column(String, primary_key=True)    # RA do aluno, serve como identificador único
-    nome = Column(String)                     # Nome do aluno
-    idade = Column(Integer)                   # Idade do aluno
-    turmas = relationship('Turma', secondary='aluno_turma')  # Relacionamento de muitos-para-muitos com turmas
+    ra = Column(String, primary_key=True)    
+    nome = Column(String)                     
+    idade = Column(Integer)                  
+    turmas = relationship('Turma', secondary='aluno_turma')  
 
     def __repr__(self):
         return f'<Aluno(ra={self.ra}, nome={self.nome}, idade={self.idade})>'
 
-# Modelo para Turma
+
 class Turma(Base):
     __tablename__ = 'turmas'
 
-    rt = Column(String, primary_key=True)    # RT da turma, serve como identificador único
-    ano = Column(String)                      # Ano da turma (exemplo: '7')
-    classe = Column(String)                   # Classe da turma (exemplo: 'A')
-    alunos = relationship('Aluno', secondary='aluno_turma')  # Relacionamento com alunos
-    professores = relationship('Professor', secondary='professor_turma')  # Relacionamento com professores
+    rt = Column(String, primary_key=True)    
+    ano = Column(String)                      
+    classe = Column(String)                   
+    alunos = relationship('Aluno', secondary='aluno_turma')  
+    professores = relationship('Professor', secondary='professor_turma')  
 
     def __repr__(self):
         return f'<Turma(rt={self.rt}, ano={self.ano}, classe={self.classe})>'
 
-# Tabela de associação entre Aluno e Turma
 class AlunoTurma(Base):
     __tablename__ = 'aluno_turma'
     aluno_ra = Column(String, ForeignKey('alunos.ra'), primary_key=True)
     turma_rt = Column(String, ForeignKey('turmas.rt'), primary_key=True)
 
-# Modelo para Professor
 class Professor(Base):
     __tablename__ = 'professores'
 
-    rp = Column(Integer, primary_key=True)  # RP do professor, identificador único
+    rp = Column(Integer, primary_key=True)  
     nome = Column(String)  # Nome do professor
 
     def __repr__(self):
         return f'<Professor(nome={self.nome}, rp={self.rp})>'
 
-# Tabela de associação entre Professor e Turma
 class ProfessorTurma(Base):
     __tablename__ = 'professor_turma'
     professor_rp = Column(Integer, ForeignKey('professores.rp'), primary_key=True)
     turma_rt = Column(String, ForeignKey('turmas.rt'), primary_key=True)
 
-# Criação das tabelas no banco de dados
 Base.metadata.create_all(engine)
 
-# Função para adicionar um aluno ao banco de dados
 def adicionar_aluno(ra, nome, idade):
     aluno_existente = session.query(Aluno).filter_by(ra=ra).first()
     if not aluno_existente:
@@ -70,13 +63,13 @@ def adicionar_aluno(ra, nome, idade):
     else:
         print("Aluno com RA já existe!")
 
-# Função para listar todos os alunos cadastrados
 def consultar_alunos():
     alunos = session.query(Aluno).all()
     for aluno in alunos:
+  
+        
         print(f'RA: {aluno.ra}, Nome: {aluno.nome}, Idade: {aluno.idade}')
 
-# Função para adicionar uma turma ao banco de dados
 def adicionar_turma(rt, ano, classe):
     turma_existente = session.query(Turma).filter_by(rt=rt).first()
     if not turma_existente:
@@ -87,13 +80,11 @@ def adicionar_turma(rt, ano, classe):
     else:
         print("Turma com RT já existe!")
 
-# Função para listar todas as turmas cadastradas
 def consultar_turmas():
     turmas = session.query(Turma).all()
     for turma in turmas:
         print(f'RT: {turma.rt}, Ano: {turma.ano}, Classe: {turma.classe}')
 
-# Função para associar um aluno a uma turma
 def adicionar_aluno_a_turma(aluno_ra, turma_rt):
     aluno = session.query(Aluno).filter_by(ra=aluno_ra).first()
     turma = session.query(Turma).filter_by(rt=turma_rt).first()
@@ -104,7 +95,6 @@ def adicionar_aluno_a_turma(aluno_ra, turma_rt):
     else:
         print("Aluno ou Turma não encontrados.")
 
-# Função para listar os alunos de uma turma específica
 def consultar_alunos_por_turma(turma_rt):
     turma = session.query(Turma).filter_by(rt=turma_rt).first()
     if turma:
@@ -114,7 +104,6 @@ def consultar_alunos_por_turma(turma_rt):
     else:
         print("Turma não encontrada.")
 
-# Função para adicionar um professor ao banco de dados
 def adicionar_professor(rp, nome):
     professor_existente = session.query(Professor).filter_by(rp=rp).first()
     if not professor_existente:
@@ -125,7 +114,6 @@ def adicionar_professor(rp, nome):
     else:
         print("Professor já existe no sistema.")
 
-# Função para listar todos os professores cadastrados
 def consultar_professores():
     professores = session.query(Professor).all()
     if professores:
@@ -134,7 +122,6 @@ def consultar_professores():
     else:
         print("Ainda não há professores registrados no sistema.")
 
-# Função para associar um professor a uma turma
 def adicionar_professor_a_turma(professor_rp, turma_rt):
     professor = session.query(Professor).filter_by(rp=professor_rp).first()
     turma = session.query(Turma).filter_by(rt=turma_rt).first()
@@ -145,7 +132,6 @@ def adicionar_professor_a_turma(professor_rp, turma_rt):
     else:
         print("Professor ou Turma não encontrados.")
 
-# Função para listar os professores de uma turma específica
 def consultar_professor_por_turma(turma_rt):
     turma = session.query(Turma).filter_by(rt=turma_rt).first()
     if turma:
@@ -155,7 +141,6 @@ def consultar_professor_por_turma(turma_rt):
     else:
         print("Turma não encontrada.")
 
-# Função principal e menu de interação com o usuário
 def main():
     while True:
         print('\nEscolha uma opção:')
