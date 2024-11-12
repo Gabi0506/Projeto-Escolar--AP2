@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 
 Base = declarative_base()
 
-engine = create_engine('sqlite:///:memory:')
+engine = create_engine('sqlite:///biblioteca.db') 
 Session = sessionmaker(bind=engine)
 session = Session()
 
