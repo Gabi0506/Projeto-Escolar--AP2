@@ -9,11 +9,7 @@ engine = create_engine('sqlite:///biblioteca.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 
-class Aluno(Base):
-    __tablename__ = 'alunos'
-    ra = Column(String, primary_key=True)
-    nome = Column(String)
-    notas = relationship("Nota", back_populates="aluno")
+
 
 class Disciplina(Base):
     __tablename__ = "disciplinas"
@@ -32,15 +28,6 @@ class Nota(Base):
 
 Base.metadata.create_all(engine)
 
-def adicionar_aluno(ra, nome):
-    try:
-        novo_aluno = Aluno(ra=ra, nome=nome)
-        session.add(novo_aluno)
-        session.commit()
-        print(f"Aluno {nome} adicionado com sucesso!")
-    except IntegrityError:
-        session.rollback()
-        print(f"Erro: RA {ra} já existe!")
 
 def adicionar_disciplina(nome):
     try:
@@ -77,10 +64,7 @@ def adicionar_nota(aluno_ra, nome_disciplina, valor):
         session.rollback()
         print("Erro ao adicionar a nota. Verifique se o aluno e a disciplina existem.")
 
-def listar_alunos():
-    alunos = session.query(Aluno).all()
-    for aluno in alunos:
-        print(f"RA: {aluno.ra}, Nome: {aluno.nome}")
+
 
 def listar_disciplinas():
     disciplinas = session.query(Disciplina).all()
